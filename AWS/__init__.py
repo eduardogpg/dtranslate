@@ -1,4 +1,5 @@
 from .common import upload_file
+from .common import get_location
 
 from .transcribe import transcribe
 

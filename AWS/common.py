@@ -63,4 +63,15 @@ def upload_file(bucket, mediafile_key, local_path, content_type):
     
     except Exception as err:
         print(err)
-        return None        
+        return None
+    
+def get_location(bucket):
+    try:
+        s3 = boto3.client('s3')
+
+        location = s3.get_bucket_location(Bucket=bucket)
+        return location['LocationConstraint']
+    
+    except Exception as err:
+        print(err)
+        return None

@@ -11,6 +11,7 @@ class Video(models.Model):
     content_type = models.CharField(max_length=10, null=False, blank=False)
     key = models.CharField(max_length=200)
     bucket = models.CharField(max_length=50, null=False, blank=False)
+    location = models.CharField(max_length=20, null=False, blank=False)
     status = models.IntegerField(choices=STATUS, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -43,12 +44,12 @@ class Video(models.Model):
 
     @property
     def url(self):
-        return f'https://{self.bucket}.s3.amazonaws.com/{self.key}'
-
+        return f"https://s3-{self.location}.amazonaws.com/{self.bucket}/{self.key}"
+        
     @property
     def format(self):
         return self.content_type.split('/')[-1]
 
     @property
     def name(self):
-        return self.title.lower().replace(' ', '_')
+        return self.title.split('.')[0].lower().replace(' ', '_')

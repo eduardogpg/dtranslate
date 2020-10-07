@@ -134,6 +134,18 @@ def create_subtitle_file(bucket, medifile_key, local_path='tmp/subtitles.srt'):
         print(err)
 
 def create_and_upload_subtitle_file(bucket, medifile_key, local_path='tmp/subtitles.srt'):
+    """
+    Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/threading.py", line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/eduardo/Documents/dtranslate/dtranslate/videos/views.py", line 41, in upload_and_translate_video
+    create_and_upload_subtitle_file(video.bucket, translate_key)
+  File "/Users/eduardo/Documents/dtranslate/dtranslate/AWS/subtitles.py", line 139, in create_and_upload_subtitle_file
+    put_file(bucket, subtitle_name, subtitle_path)
+NameError: name 'subtitle_name' is not defined
+"""
     subtitle_path = create_subtitle_file(bucket, medifile_key, local_path)
     
     put_file(bucket, subtitle_name, subtitle_path)

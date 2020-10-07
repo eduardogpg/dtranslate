@@ -9,8 +9,9 @@ from django.contrib import messages
 from .models import Video
 from .constants import LENGUAGES
 
-from AWS import upload_file
 from AWS import transcribe
+from AWS import upload_file
+from AWS import get_location
 from AWS import translate_from_mediafile
 from AWS import create_and_upload_subtitle_file
 
@@ -23,13 +24,16 @@ def upload_and_translate_video(local_path, lenguage, video_id):
                             local_path, video.content_type)
 
     if response:
-        print('Comienza el transcribe!')
+        print(response)
+        video.set_key(response.key)
+
         video.transcribe()
         translate_key = transcribe(video.bucket, video.url,
-                                    name=video.name, lenguage=lenguage, format=video.format)
+                                    name=video.name, lenguage=lenguage,
+                                    format=video.format)
         
         print('Comienza el translate!')
-        video.traslate()
+        video.translate()
         translate_from_mediafile(video.bucket, translate_key)
 
         print('Comienza el subtitle!')
@@ -53,9 +57,10 @@ def create(request):
             
             local_path = handle_uploaded_file(video_file)
             if local_path:
-                
+                 
                 video = Video.objects.create(title=video_file._name,
                                             bucket=settings.BUCKET,
+                                            location=get_location(settings.BUCKET),
                                             content_type=video_file.content_type)
                 
                 args = (local_path, lenguage, video.id)

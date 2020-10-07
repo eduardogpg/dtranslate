@@ -12,7 +12,6 @@ def transcribe(bucket, mediafile_uri, name='', prefix='transcribe_', format='mp4
         Media={
             'MediaFileUri': mediafile_uri
         },
-
         OutputBucketName=bucket,
         MediaFormat=format,
         LanguageCode=lenguage
