@@ -1,16 +1,14 @@
-import multiprocessing
-
 from django.conf import settings
 from django.shortcuts import render
+from django.shortcuts import redirect
+
+from AWS import put_object
 
 from .models import Item
-from projects.models import Project
-
 from .forms import UploadFileForm
+from .tasks import upload_video_file
 
-def upload_video_file(local_path, item):
-    print('\n\n\n\nComenzando subida')
-    print('\n\n\n\n\nComenzando subida Finalizadaa!!!!')
+from projects.models import Project
 
 def create(request):
     form = UploadFileForm(request.POST or None)
@@ -22,7 +20,7 @@ def create(request):
             video = form.cleaned_data['file']
             name = video._name.split('.')[0].lower().replace(' ', '_')
 
-            project = Project.objects.create_by_aws(settings.BUCKET, name)
+            project = Project.objects.last() #create_by_aws(settings.BUCKET, name)
             
             local_path = f'tmp/{video._name}'
             if handle_uploaded_file(local_path, video):
@@ -33,8 +31,8 @@ def create(request):
                     project=project
                 )
 
-                process = multiprocessing.Process(target=upload_video_file, args=(local_path, item))
-                process.start()
+                upload_video_file.apply_async(args=(local_path, item.id))
+                return redirect('projects:detail', project.id)
 
     context = {
         'title': 'Procesar nuevo vídeo',
