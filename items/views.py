@@ -2,11 +2,10 @@ from django.conf import settings
 from django.shortcuts import render
 from django.shortcuts import redirect
 
-from AWS import put_object
-
 from .models import Item
+from .common import get_lenguage
 from .forms import UploadFileForm
-from .tasks import upload_video_file
+from .tasks import start_transcribe_and_translate
 
 from projects.models import Project
 
@@ -18,20 +17,24 @@ def create(request):
 
         if form.is_valid():
             video = form.cleaned_data['file']
-            name = video._name.split('.')[0].lower().replace(' ', '_')
+            name = video._name.split('.')[0].lower().replace(' ', '_').strip()
 
-            project = Project.objects.last() #create_by_aws(settings.BUCKET, name)
+            project = Project.objects.create_by_aws(settings.BUCKET, settings.LOCATION, name)
             
             local_path = f'tmp/{video._name}'
             if handle_uploaded_file(local_path, video):
 
+                target = get_lenguage(int(form.cleaned_data['lenguage']))
+                lenguage = get_lenguage(int(form.cleaned_data['target']))
+
                 item = Item.objects.create(
                     name=video._name,
                     content_type=video.content_type,
-                    project=project
+                    project=project,
+                    lenguage=lenguage
                 )
 
-                upload_video_file.apply_async(args=(local_path, item.id))
+                start_transcribe_and_translate.apply_async(args=(local_path, item.id, target))
                 return redirect('projects:detail', project.id)
 
     context = {

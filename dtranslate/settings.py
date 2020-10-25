@@ -120,7 +120,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# boto3.session.Session().region_name
 BUCKET = 'pywombatv2'
+LOCATION = 'us-east-2'
 
 BROKER_URL = 'redis://localhost:6379'
 

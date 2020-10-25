@@ -1,6 +1,8 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
+<a href="{% url 'projects:list' %}">Back</a>
+
 <div class="row">
     <div class="col mt-2">
         <h3>{{ object.name }} </h3>
