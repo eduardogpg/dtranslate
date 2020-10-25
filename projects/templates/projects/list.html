@@ -1,0 +1,32 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col mt-3">
+
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Items</th>
+                <th scope="col">Created at</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for project in object_list %}
+                    <tr>
+                        <td>
+                            <i class="far fa-folder"></i>
+                            <a href="{% url 'projects:detail' project.id %}">{{ project.name }}</a>
+                        </td>
+                        <td> {{ project.item_set.count }}</td>
+                        <td> {{ project.created_at | date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+{% endblock %}

@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from videos.views import create
+from items.views import create
 
 urlpatterns = [
-    path('', create),
+    path('', create, name='index'),
     path('admin/', admin.site.urls),
-    path('videos/', include('videos.urls'))
+    path('projects', include('projects.urls')),
 ]

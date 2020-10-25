@@ -1,16 +1,16 @@
-import boto3
 import time
 import uuid
+import boto3
 
-def transcribe(bucket, mediafile_uri, name='', prefix='transcribe_', format='mp4', lenguage='en-US'):
+def transcribe(bucket, video_uri, name, format='mp4', lenguage='en-US'):
     transcribe = boto3.client('transcribe')
-
-    job = f'{prefix}{uuid.uuid4().hex}_{name}'
+    
+    job_name = f'transcribe_{uuid.uuid4().hex}_{name}'
 
     transcribe.start_transcription_job(
-        TranscriptionJobName=job,
+        TranscriptionJobName=job_name,
         Media={
-            'MediaFileUri': mediafile_uri
+            'MediaFileUri': video_uri
         },
         OutputBucketName=bucket,
         MediaFormat=format,
@@ -18,14 +18,11 @@ def transcribe(bucket, mediafile_uri, name='', prefix='transcribe_', format='mp4
     )
 
     while True:
-        response = transcribe.get_transcription_job(TranscriptionJobName=job)
+        response = transcribe.get_transcription_job(TranscriptionJobName=job_name)
         if response['TranscriptionJob']['TranscriptionJobStatus'] in ['COMPLETED', 'FAILED']:
             break
         
-        print("Transcripción en progreso...")
         time.sleep(10)
     
-    remote_mediafile_uri = response["TranscriptionJob"]["Transcript"]["TranscriptFileUri"]
-    job = remote_mediafile_uri.split('/')[-1]
-
-    return job
+    transcribe_uri = response["TranscriptionJob"]["Transcript"]["TranscriptFileUri"]
+    return transcribe_uri.split('/')[-1]

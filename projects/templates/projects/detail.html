@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col mt-2">
+        <h3>{{ object.name }} </h3>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-8">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <td scope="col">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="check-all">
+                        </div>
+                    </td>
+                    <th>Name</th>
+                    <th>Content Type</th>
+                    <th>Created at</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="items">
+                {% for item in items %}
+                    {% include 'items/snippets/item.html' with item=item %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <div class="col-4">
+        <h4>Status: Pendiente</h4>
+    </div>
+</div>
+{% endblock %}

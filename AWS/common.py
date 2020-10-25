@@ -1,4 +1,8 @@
 import boto3
+import logging
+
+from pathlib import Path
+from datetime import datetime
 
 def read_content(bucket, mediafile_key):
     try:
@@ -9,7 +13,7 @@ def read_content(bucket, mediafile_key):
         return content
 
     except Exception as err:
-        print(err)
+        logging.error("Exception", exc_info=True)
         return None
 
 def download_file(bucket, mediafile_key, local_path):
@@ -22,7 +26,7 @@ def download_file(bucket, mediafile_key, local_path):
         return local_path
 
     except Exception as err:
-        print(err)
+        logging.error("Exception", exc_info=True)
         return None
 
 def put_file(bucket, mediafile_key, local_path):
@@ -33,21 +37,19 @@ def put_file(bucket, mediafile_key, local_path):
         return True
 
     except Exception as err:
-        print(err)
+        logging.error("Exception", exc_info=True)
         return None
 
 def put_object(bucket, mediafile_key, content):
     try:
         s3 = boto3.client('s3')
-        
         s3.put_object(Bucket=bucket, Key=mediafile_key, Body=content)
         
         return True
 
     except Exception as err:
-        print(err)
+        logging.error("Exception", exc_info=True)
         return None
-
 
 def upload_file(bucket, mediafile_key, local_path, content_type):
     try:
@@ -62,7 +64,7 @@ def upload_file(bucket, mediafile_key, local_path, content_type):
         )
     
     except Exception as err:
-        print(err)
+        logging.error("Exception", exc_info=True)
         return None
     
 def get_location(bucket):
@@ -73,5 +75,23 @@ def get_location(bucket):
         return location['LocationConstraint']
     
     except Exception as err:
+        logging.error("Exception", exc_info=True)
+        return None
+
+def create_folder(bucket, directory_name):
+    try:
+        s3 = boto3.client('s3')
+        key = directory_name + '/'
+    
+        s3.put_object(Bucket=bucket, Key=key)
+        return key
+
+    except Exception as err:
         print(err)
         return None
+
+def get_seconds_duration(start_time, end_time):
+    start_time = datetime.strptime(start_time, '%H:%M:%S.%f')
+    end_time = datetime.strptime(end_time, '%H:%M:%S.%f')
+
+    return (end_time - start_time).seconds
