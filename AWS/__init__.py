@@ -4,3 +4,4 @@ from .common import create_folder
 from .common import set_public_object
 
 from .transcribe import transcribe
+from .subtitle import subtitles

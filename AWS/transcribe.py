@@ -25,9 +25,5 @@ def transcribe(bucket, output_key, video_uri, name, format='mp4', lenguage='en-U
         
         time.sleep(10)
     
-    print('\n\n\n\n\n\n\n')
-    print(response)
-    print('\n\n\n\n\n\n\n')
-
     transcribe_uri = response["TranscriptionJob"]["Transcript"]["TranscriptFileUri"]
     return transcribe_uri.split('/')[-1]

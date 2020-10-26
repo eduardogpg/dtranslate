@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.conf import settings
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -17,16 +19,15 @@ def create(request):
 
         if form.is_valid():
             video = form.cleaned_data['file']
-            # Regex!
             name = video._name.split('.')[0].lower().replace(' ', '_').strip()
 
             project = Project.objects.create_by_aws(settings.BUCKET, settings.LOCATION, name)
             
-            local_path = f'tmp/{video._name}'
-            if handle_uploaded_file(local_path, video):
+            local_path = handle_uploaded_file(video)
+            if local_path:
 
-                target = get_lenguage(int(form.cleaned_data['lenguage']))
-                lenguage = get_lenguage(int(form.cleaned_data['target']))
+                target = get_lenguage(int(form.cleaned_data['target']))
+                lenguage = get_lenguage(int(form.cleaned_data['lenguage']))
 
                 item = Item.objects.create(
                     name=video._name,
@@ -46,7 +47,10 @@ def create(request):
     return render(request, 'items/create.html', context)
 
 
-def handle_uploaded_file(local_path, video):
+def handle_uploaded_file(video):
+    Path('tmp/').mkdir(parents=True, exist_ok=True)
+    local_path = f'tmp/{video._name}'
+    
     with open(local_path, 'wb+') as destination:
         for chunk in video.chunks():
             destination.write(chunk)

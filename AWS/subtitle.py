@@ -173,16 +173,16 @@ def generate_subtitle_file(response, local_path):
             sentence = generate_line(line, item['sentence'], start_time, end_time)
             file.write(sentence)
 
-def subtitles(bucket, transcribe_key, str_name, source, target):
+def subtitles(bucket, transcribe_key, str_name, output_key, source, target):
     now = datetime.now().strftime('%Y_%m_%d')
     
     subtitles_local_path = f'tmp/subtitles/'
     Path(subtitles_local_path).mkdir(parents=True, exist_ok=True)
     
-    subtitle_key =  f'{source}_{str_name}_{now}.srt'
+    subtitle_key =  f'{output_key}{source}_{str_name}_{now}.srt'
     subtitle_local_path = f'{subtitles_local_path}{subtitle_key}'
 
-    translate_subtitle_key = f'{target}_{str_name}_{now}.srt'
+    translate_subtitle_key = f'{output_key}{target}_{str_name}_{now}.srt'
     translate_subtitle_local_path = f'{subtitles_local_path}{translate_subtitle_key}'
 
     response = subtitles_from_transcribe(bucket, transcribe_key)
