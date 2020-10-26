@@ -19,7 +19,7 @@ def create(request):
 
         if form.is_valid():
             video = form.cleaned_data['file']
-            name = video._name.split('.')[0].lower().replace(' ', '_').strip()
+            name = video._name.strip().split('.')[0].lower().replace(' ', '_')
 
             project = Project.objects.create_by_aws(settings.BUCKET, settings.LOCATION, name)
             
@@ -45,7 +45,6 @@ def create(request):
     }
     
     return render(request, 'items/create.html', context)
-
 
 def handle_uploaded_file(video):
     Path('tmp/').mkdir(parents=True, exist_ok=True)

@@ -15,10 +15,10 @@ def start_transcribe_and_translate(local_path, item_id, target):
     print('Subiendo vídeo')
     upload_video_file(local_path, item_id)
     
-    print('Comenzando transcribe')
+    print('Generando transcripción')
     transcribe_item = start_transcribe(item_id)
     
-    print('Comenzando substiles')
+    print('Generando subtitulos')
     start_substitles(transcribe_item.id, target)
 
 @task(name='upload_video_file')
