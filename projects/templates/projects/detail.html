@@ -69,5 +69,34 @@
     
     })
 
+    document.querySelectorAll('.item-download').forEach(element => {
+  
+        element.addEventListener('click', function(event){
+            
+            event.preventDefault();
+
+            fetch(this.href, {
+                method: 'GET',
+            })
+            .then(response => response.blob())
+            .then(blob => {
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+        
+                a.download = blob.type;
+                document.body.appendChild(a);
+                a.click();
+
+                window.URL.revokeObjectURL(url);
+
+            });
+            
+        })
+    });
+
+
 </script>
 {% endblock %}

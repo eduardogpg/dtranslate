@@ -11,6 +11,10 @@ from celery.decorators import task
 from items.models import Item
 
 @task(name='start_transcribe_and_translate')
+def delete_file(local_path):
+    os.remove(local_path)
+
+@task(name='start_transcribe_and_translate')
 def start_transcribe_and_translate(local_path, item_id, target):
     print('Subiendo vídeo')
     upload_video_file(local_path, item_id)

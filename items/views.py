@@ -1,6 +1,10 @@
 from pathlib import Path
 
+from datetime import timedelta
+from django.utils import timezone
+
 from django.http import JsonResponse
+from django.http import FileResponse
 
 from django.conf import settings
 from django.urls import reverse
@@ -11,9 +15,13 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.shortcuts import get_object_or_404
 
+from AWS import download_file
+
 from .models import Item
 from .common import get_lenguage
 from .forms import UploadFileForm
+
+from .tasks import delete_file
 from .tasks import start_transcribe_and_translate
 
 from projects.models import Project
@@ -37,6 +45,18 @@ def delete(request, pk):
 
     return redirect('projects:detail', project.id)
  
+def download(request, pk):
+    item = get_object_or_404(Item, pk=pk)
+
+    local_path = f'tmp/{item.name}'
+    Path('tmp/').mkdir(parents=True, exist_ok=True)
+    
+    if download_file(item.bucket, item.key, local_path):
+        delete_file.apply_async(args=(local_path,), eta=timezone.now() + timedelta(minutes=1))
+        return FileResponse(open(local_path, 'rb'))
+
+    raise Http404
+
 def create(request):
     form = UploadFileForm(request.POST or None)
 

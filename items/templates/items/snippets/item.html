@@ -14,7 +14,7 @@
               ...
             </button>
             <div class="dropdown-menu">
-              <a class="dropdown-item image-download" href="#">Descargar</a>
+              <a class="dropdown-item item-download" href="{% url 'items:download' item.pk %}">Descargar</a>
               <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{% url 'items:detail' pk=item.id %}" item-id='{{ item.id }}' data-toggle="modal" data-target="#deleteModal">Eliminar</a>
             </div>
