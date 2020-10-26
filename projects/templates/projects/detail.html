@@ -1,6 +1,8 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
+{% include 'items/snippets/delete.html' %}
+
 <a href="{% url 'projects:list' %}">Back</a>
 
 <div class="row">
@@ -11,7 +13,6 @@
 
 <div class="row mt-4">
     <div class="col">
-
         <table class="table">
             <thead>
                 <tr>
@@ -36,4 +37,37 @@
     </div>
     
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const checkAll = document.getElementById('check-all')
+
+    checkAll.addEventListener('change', function(event){
+        document.querySelectorAll(".item-checkbox").forEach(element => {
+            element.checked = this.checked;
+        })
+    });
+
+
+    $('#deleteModal').on('show.bs.modal', function (event) {
+        
+        var button = $(event.relatedTarget)
+        var item = button[0];
+        var modal = $(this)
+
+        itemId = item.getAttribute('item-id');
+
+        fetch(item.href)
+        .then(response => response.json())
+        .then(function(data){
+            
+            modal.find('#item-name').text(data.name);
+            modal.find('#delete-item-button')[0].href = data.delete_url
+
+        });
+    
+    })
+
+</script>
 {% endblock %}

@@ -1,8 +1,15 @@
 from pathlib import Path
 
+from django.http import JsonResponse
+
 from django.conf import settings
+from django.urls import reverse
 from django.shortcuts import render
 from django.shortcuts import redirect
+
+from django.views.decorators.csrf import csrf_exempt
+
+from django.shortcuts import get_object_or_404
 
 from .models import Item
 from .common import get_lenguage
@@ -11,6 +18,25 @@ from .tasks import start_transcribe_and_translate
 
 from projects.models import Project
 
+@csrf_exempt
+def detail(request, pk):
+    item = get_object_or_404(Item, pk=pk)
+
+    return JsonResponse({
+            'id': item.id,
+            'name': item.name,
+            'delete_url': reverse('items:delete', kwargs={'pk': item.id})
+        }
+    )
+
+def delete(request, pk):
+    item = get_object_or_404(Item, pk=pk)
+    project = item.project
+    
+    item.delete()
+
+    return redirect('projects:detail', project.id)
+ 
 def create(request):
     form = UploadFileForm(request.POST or None)
 

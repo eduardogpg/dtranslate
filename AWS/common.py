@@ -79,6 +79,20 @@ def upload_file(bucket, mediafile_key, local_path, content_type):
         logging.error("Exception", exc_info=True)
         return None
     
+def delete_mediafile(bucket, key):
+    try:
+    
+        s3 = boto3.resource('s3')
+        
+        obj = s3.Object(bucket, key)
+        obj.delete()
+
+        return True
+        
+    except Exception as err:
+        print(err)
+        return None    
+
 def get_location(bucket):
     try:
         s3 = boto3.client('s3')
