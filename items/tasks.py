@@ -1,7 +1,8 @@
 import os
 
 from AWS import transcribe
-from AWS import put_object
+from AWS import upload_file
+from AWS import set_public_object
 
 from celery.decorators import task
 
@@ -21,14 +22,15 @@ def upload_video_file(local_path, item_id):
         project.uploading_file()
 
         mediafile_key = f'{project.key}{item.name}'
-        if put_object(project.bucket, mediafile_key, local_path):
+        if upload_file(project.bucket, mediafile_key, local_path, item.content_type):
             item.key = mediafile_key
             item.bucket = project.bucket
-            item.location = project.location
             item.save()
             
             project.file_uploaded()
             os.remove(local_path)
+
+            set_public_object(item.bucket, item.key)
 
 @task(name='start_transcribe')
 def start_transcribe(video_item_id):
@@ -38,12 +40,13 @@ def start_transcribe(video_item_id):
         project = item.project
         project.transcribe()
 
-        transcribe_uri = transcribe(project.bucket, item.uri, project.name, format=item.format, lenguage=item.lenguage)
-    
+        mediafile_key = transcribe(project.bucket, project.key, item.uri, project.name,
+                                format=item.format, lenguage=item.lenguage)
+
         item_transcribe = Item.objects.creat(
-            name='transcribe!!!',
-            bucket=item.bucket,
-            key=transcribe_uri,
+            name=mediafile_key,
+            bucket=project.bucket,
+            key=f'{project.key}{mediafile_key}' ,
             content_type='application/json',
             project=project,
             lenguage=item.lenguage

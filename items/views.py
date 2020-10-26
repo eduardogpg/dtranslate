@@ -17,6 +17,7 @@ def create(request):
 
         if form.is_valid():
             video = form.cleaned_data['file']
+            # Regex!
             name = video._name.split('.')[0].lower().replace(' ', '_').strip()
 
             project = Project.objects.create_by_aws(settings.BUCKET, settings.LOCATION, name)

@@ -40,6 +40,18 @@ def put_file(bucket, mediafile_key, local_path):
         logging.error("Exception", exc_info=True)
         return None
 
+def set_public_object(bucket, mediafile_key):
+    try:
+        s3 = boto3.resource('s3')
+        object_acl = s3.ObjectAcl(bucket, mediafile_key)
+        object_acl.put(ACL='public-read')
+
+        return True
+
+    except Exception as err:
+        logging.error("Exception", exc_info=True)
+        return None
+
 def put_object(bucket, mediafile_key, content):
     try:
         s3 = boto3.client('s3')

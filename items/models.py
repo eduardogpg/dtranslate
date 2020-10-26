@@ -1,7 +1,5 @@
 from django.db import models
 
-from AWS import put_object
-
 from projects.models import Project
 
 class Item(models.Model):

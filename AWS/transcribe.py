@@ -2,7 +2,7 @@ import time
 import uuid
 import boto3
 
-def transcribe(bucket, video_uri, name, format='mp4', lenguage='en-US'):
+def transcribe(bucket, output_key, video_uri, name, format='mp4', lenguage='en-US'):
     transcribe = boto3.client('transcribe')
     
     job_name = f'transcribe_{uuid.uuid4().hex}_{name}'
@@ -13,6 +13,7 @@ def transcribe(bucket, video_uri, name, format='mp4', lenguage='en-US'):
             'MediaFileUri': video_uri
         },
         OutputBucketName=bucket,
+        OutputKey=output_key,
         MediaFormat=format,
         LanguageCode=lenguage
     )
@@ -24,5 +25,9 @@ def transcribe(bucket, video_uri, name, format='mp4', lenguage='en-US'):
         
         time.sleep(10)
     
+    print('\n\n\n\n\n\n\n')
+    print(response)
+    print('\n\n\n\n\n\n\n')
+
     transcribe_uri = response["TranscriptionJob"]["Transcript"]["TranscriptFileUri"]
     return transcribe_uri.split('/')[-1]
