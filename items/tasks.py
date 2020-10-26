@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from AWS import transcribe
 from AWS import subtitles
@@ -59,10 +60,37 @@ def start_transcribe(video_id):
 
 @task(name='start_substitles')
 def start_substitles(transcribe_id, target):
+    now = datetime.now().strftime('%Y_%m_%d')
+
     item = Item.objects.filter(id=transcribe_id).first()
     project = item.project
 
     source = item.lenguage.split('-')[0]
     target = target.split('-')[0]
 
-    s_key, t_key = subtitles(item.bucket, item.key, project.name, project.key, source, target)
+    subtitle_name = f'{source}_{project.name}_{now}.srt'
+    subtitle_translate_name = f'{target}_{project.name}_{now}.srt'
+
+    subtitle_key, subtitle_translate_key = subtitles(
+        project.bucket, item.key,
+        subtitle_name, subtitle_translate_name,
+        project.key, source, target
+    )
+
+    Item.objects.create(
+        name=subtitle_name,
+        bucket=project.bucket,
+        key=subtitle_key,
+        content_type='text/srt',
+        project=project,
+        lenguage=item.lenguage
+    )
+
+    Item.objects.create(
+        name=subtitle_translate_name,
+        bucket=project.bucket,
+        key=subtitle_translate_key,
+        content_type='text/srt',
+        project=project,
+        lenguage=item.lenguage
+    )
